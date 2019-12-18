@@ -1,12 +1,28 @@
 version: 2
 jobs:
   build:
+    working_directory: ~/circleci-feature9
     docker:
-      - image: docker:ltest
-
+    - image: maven:3.6.3-jdk-11-openj9
     steps:
-      - checkout
-
-      - run:
+    - checkout
+    - restore_cache:
+        key: circleci-feature9-{{ checksum "pom.xml" }}
+    - run: mvn test
+    - run:
           name: building docker images
           command: docker build -t dockertest .
+
+    - save_cache:
+        paths:
+        - ~/.m2
+        key: circleci-feature9-{{ checksum "pom.xml" }}
+    - store_test_results:
+        path: target/surefire-reports
+    environment:
+    - CIRCLE_COMPARE_URL: https://github.com/premkadile3041/hello-world/compare/c11677eb4b950862d314f5162ed3bced7cb8555e...f4691aa12b9e6a48f177f0c1fdbd91bef9a5aed9
+workflows:
+  version: 2
+  workflow:
+    jobs:
+    - build
