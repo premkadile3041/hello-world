@@ -3,12 +3,11 @@ jobs:
   build:
     working_directory: ~/circleci-feature9
     docker:
-    - image: maven:3.6.3-jdk-11-openj9
+    - image: docker:ltest
     steps:
     - checkout
     - restore_cache:
         key: circleci-feature9-{{ checksum "pom.xml" }}
-    - run: mvn test
     - run:
           name: building docker images
           command: docker build -t dockertest .
